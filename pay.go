@@ -2,30 +2,30 @@ package gopay
 
 import (
 	"errors"
-	"github.com/milkbobo/gopay/client"
-	"github.com/milkbobo/gopay/common"
-	"github.com/milkbobo/gopay/constant"
+	"yellbuy.com/gopay/client"
+	"yellbuy.com/gopay/common"
+	"yellbuy.com/gopay/constant"
 )
 
 // 用户下单支付接口
-func Pay(charge *common.Charge) (map[string]string, error) {
+func Pay(ct common.PayClient, charge *common.Charge) (map[string]string, error) {
 	err := checkCharge(charge)
 	if err != nil {
 		return map[string]string{}, err
 	}
 
-	ct := getPayType(charge.PayMethod)
+	//ct := getPayType(charge.PayMethod)
 	re, err := ct.Pay(charge)
 	return re, err
 }
 
 // 付款给用户接口
-func PayToClient(charge *common.Charge) (map[string]string, error) {
+func PayToClient(ct common.PayClient, charge *common.Charge) (map[string]string, error) {
 	err := checkCharge(charge)
 	if err != nil {
 		return nil, err
 	}
-	ct := getPayType(charge.PayMethod)
+	//ct := getPayType(charge.PayMethod)
 	re, err := ct.PayToClient(charge)
 	return re, err
 }

@@ -9,10 +9,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/milkbobo/gopay/client"
-	"github.com/milkbobo/gopay/common"
-	"github.com/milkbobo/gopay/util"
 	"encoding/json"
+
+	"yellbuy.com/gopay/client"
+	"yellbuy.com/gopay/common"
+	"yellbuy.com/gopay/util"
 )
 
 func AliWebCallback(w http.ResponseWriter, r *http.Request) (*common.AliWebPayResult, error) {
@@ -147,7 +148,7 @@ func WeChatWebCallback(w http.ResponseWriter, r *http.Request) (*common.WeChatPa
 	return &reXML, nil
 }
 
-func WeChatAppCallback(w http.ResponseWriter, r *http.Request) (*common.WeChatPayResult, error) {
+func WeChatAppCallback(c *client.WechatAppClient, w http.ResponseWriter, r *http.Request) (*common.WeChatPayResult, error) {
 	var returnCode = "FAIL"
 	var returnMsg = ""
 	defer func() {
@@ -188,7 +189,7 @@ func WeChatAppCallback(w http.ResponseWriter, r *http.Request) (*common.WeChatPa
 		signData = append(signData, fmt.Sprintf("%v=%v", k, v))
 	}
 
-	key := client.DefaultWechatAppClient().Key
+	key := c.Key
 
 	mySign, err := client.WechatGenSign(key, m)
 	if err != nil {

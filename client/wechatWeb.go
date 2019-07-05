@@ -3,8 +3,8 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/milkbobo/gopay/common"
-	"github.com/milkbobo/gopay/util"
+	"yellbuy.com/gopay/common"
+	"yellbuy.com/gopay/util"
 	"time"
 )
 

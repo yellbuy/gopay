@@ -7,8 +7,8 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"github.com/milkbobo/gopay/common"
-	"github.com/milkbobo/gopay/util"
+	"yellbuy.com/gopay/common"
+	"yellbuy.com/gopay/util"
 	"sort"
 	"strings"
 	"github.com/shopspring/decimal"
@@ -185,8 +185,11 @@ func ToURL(payUrl string, m map[string]string) string {
 // 微信金额浮点转字符串
 func WechatMoneyFeeToString(moneyFee float64) string {
 	aDecimal := decimal.NewFromFloat(moneyFee)
+	//fmt.Println("aDecimal:",aDecimal)
 	bDecimal := decimal.NewFromFloat(100)
-	return aDecimal.Mul(bDecimal).Truncate(0).String()
+	//fmt.Println("bDecimal:",bDecimal)
+	res:= aDecimal.Mul(bDecimal).Truncate(0).String()
+	return res
 }
 
 // 支付宝金额转字符串

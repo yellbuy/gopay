@@ -5,9 +5,9 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"github.com/milkbobo/gopay/client"
-	"github.com/milkbobo/gopay/common"
-	"github.com/milkbobo/gopay/constant"
+	"yellbuy.com/gopay/client"
+	"yellbuy.com/gopay/common"
+	"yellbuy.com/gopay/constant"
 	"net/http"
 	"testing"
 )

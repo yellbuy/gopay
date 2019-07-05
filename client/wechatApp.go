@@ -3,16 +3,17 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/milkbobo/gopay/common"
-	"github.com/milkbobo/gopay/util"
 	"strings"
 	"time"
+
+	"yellbuy.com/gopay/common"
+	"yellbuy.com/gopay/util"
 )
 
 var defaultWechatAppClient *WechatAppClient
 
-func InitWxAppClient(c *WechatAppClient) {
-	defaultWechatAppClient = c
+func InitWxAppClient(c *WechatAppClient) *WechatAppClient {
+	return c
 }
 
 // DefaultWechatAppClient 默认微信app客户端

@@ -3,19 +3,20 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/milkbobo/gopay/common"
-	"github.com/milkbobo/gopay/util"
 	"time"
+
+	"yellbuy.com/gopay/common"
+	"yellbuy.com/gopay/util"
 )
 
 var defaultWechatMiniProgramClient *WechatMiniProgramClient
 
-func InitWxMiniProgramClient(c *WechatMiniProgramClient) {
+func InitWxMiniProgramClient(c *WechatMiniProgramClient) *WechatMiniProgramClient {
 	if len(c.PrivateKey) != 0 && len(c.PublicKey) != 0 {
 		c.httpsClient = NewHTTPSClient(c.PublicKey, c.PrivateKey)
 	}
-
-	defaultWechatMiniProgramClient = c
+	return c
+	//defaultWechatMiniProgramClient = c
 }
 
 func DefaultWechatMiniProgramClient() *WechatMiniProgramClient {
@@ -46,7 +47,7 @@ func (this *WechatMiniProgramClient) Pay(charge *common.Charge) (map[string]stri
 	m["trade_type"] = "JSAPI"
 	m["openid"] = charge.OpenID
 	m["sign_type"] = "MD5"
-
+	//fmt.Println("total_fee:",m["total_fee"])
 	sign, err := WechatGenSign(this.Key, m)
 	if err != nil {
 		return map[string]string{}, err
