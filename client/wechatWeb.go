@@ -3,15 +3,17 @@ package client
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"yellbuy.com/gopay/common"
 	"yellbuy.com/gopay/util"
-	"time"
 )
 
 var defaultWechatWebClient *WechatWebClient
 
-func InitWxWebClient(c *WechatWebClient) {
-	defaultWechatWebClient = c
+func InitWxWebClient(c *WechatWebClient) *WechatWebClient {
+
+	return c
 }
 
 func DefaultWechatWebClient() *WechatWebClient {
