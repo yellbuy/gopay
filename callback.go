@@ -68,7 +68,7 @@ func AliAppCallback(w http.ResponseWriter, r *http.Request) (*common.AliWebPayRe
 	}
 	sort.Strings(signSlice)
 	signData := strings.Join(signSlice, "&")
-	if m["sign_type"] != "RSA" {
+	if m["sign_type"] != "RSA2" {
 		result = "error"
 		panic("签名类型未知")
 	}
@@ -92,7 +92,7 @@ func AliAppCallback(w http.ResponseWriter, r *http.Request) (*common.AliWebPayRe
 }
 
 // WeChatCallback 微信支付
-func WeChatWebCallback(w http.ResponseWriter, r *http.Request) (*common.WeChatPayResult, error) {
+func WeChatCallback(w http.ResponseWriter, r *http.Request) (*common.WeChatPayResult, error) {
 	var returnCode = "FAIL"
 	var returnMsg = ""
 	defer func() {
@@ -102,24 +102,20 @@ func WeChatWebCallback(w http.ResponseWriter, r *http.Request) (*common.WeChatPa
 		w.Write([]byte(returnBody))
 	}()
 	var reXML common.WeChatPayResult
-	//body := cb.Ctx.Input.RequestBody
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		//log.Error(string(body))
 		returnCode = "FAIL"
 		returnMsg = "Bodyerror"
-		panic(err)
+		return &reXML, errors.New(returnCode + ":" + returnMsg)
 	}
 	err = xml.Unmarshal(body, &reXML)
 	if err != nil {
-		//log.Error(err, string(body))
-		returnMsg = "参数错误"
 		returnCode = "FAIL"
-		panic(err)
+		returnMsg = "参数错误"
+		return &reXML, errors.New(returnCode + ":" + returnMsg)
 	}
 
 	if reXML.ReturnCode != "SUCCESS" {
-		//log.Error(reXML)
 		returnCode = "FAIL"
 		return &reXML, errors.New(reXML.ReturnCode)
 	}
@@ -147,7 +143,6 @@ func WeChatWebCallback(w http.ResponseWriter, r *http.Request) (*common.WeChatPa
 	returnCode = "SUCCESS"
 	return &reXML, nil
 }
-
 func WeChatAppCallback(c *client.WechatAppClient, w http.ResponseWriter, r *http.Request) (*common.WeChatPayResult, error) {
 	var returnCode = "FAIL"
 	var returnMsg = ""

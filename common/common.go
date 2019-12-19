@@ -1,7 +1,5 @@
 package common
 
-import ()
-
 // PayClient 支付客户端接口
 type PayClient interface {
 	// 用户下单付款
@@ -12,6 +10,7 @@ type PayClient interface {
 
 // Charge 支付参数
 type Charge struct {
+	APPID       string  `json:"-"`
 	TradeNum    string  `json:"tradeNum,omitempty"`
 	Origin      string  `json:"origin,omitempty"`
 	UserID      string  `json:"userId,omitempty"`
@@ -24,6 +23,9 @@ type Charge struct {
 	OpenID      string  `json:"openid,omitempty"`
 	CheckName   bool    `json:"check_name,omitempty"`
 	ReUserName  string  `json:"re_user_name,omitempty"`
+	// 阿里提现
+	AliAccount     string `json:"ali_account"`
+	AliAccountType string `json:"ali_account_type"`
 }
 
 //PayCallback 支付返回
