@@ -12,7 +12,7 @@ import (
 var defaultWechatWebClient *WechatWebClient
 
 func InitWxWebClient(c *WechatWebClient) *WechatWebClient {
-
+	c.httpsClient = NewHTTPSClient(c.PublicKey, c.PrivateKey)
 	return c
 }
 

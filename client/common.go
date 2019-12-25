@@ -7,11 +7,12 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"yellbuy.com/gopay/common"
-	"yellbuy.com/gopay/util"
 	"sort"
 	"strings"
+
 	"github.com/shopspring/decimal"
+	"yellbuy.com/gopay/common"
+	"yellbuy.com/gopay/util"
 )
 
 // 微信企业付款到零钱
@@ -230,7 +231,7 @@ func WechatMoneyFeeToString(moneyFee float64) string {
 	//fmt.Println("aDecimal:",aDecimal)
 	bDecimal := decimal.NewFromFloat(100)
 	//fmt.Println("bDecimal:",bDecimal)
-	res:= aDecimal.Mul(bDecimal).Truncate(0).String()
+	res := aDecimal.Mul(bDecimal).Truncate(0).String()
 	return res
 }
 
