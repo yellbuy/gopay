@@ -2,6 +2,7 @@ package gopay
 
 import (
 	"errors"
+
 	"yellbuy.com/gopay/client"
 	"yellbuy.com/gopay/common"
 	"yellbuy.com/gopay/constant"
@@ -27,6 +28,17 @@ func PayToClient(ct common.PayClient, charge *common.Charge) (map[string]string,
 	}
 	//ct := getPayType(charge.PayMethod)
 	re, err := ct.PayToClient(charge)
+	return re, err
+}
+
+// 申请退款
+func PayRefund(ct common.PayClient, charge *common.Charge) (map[string]string, error) {
+	err := checkCharge(charge)
+	if err != nil {
+		return nil, err
+	}
+	//ct := getPayType(charge.PayMethod)
+	re, err := ct.PayRefund(charge)
 	return re, err
 }
 

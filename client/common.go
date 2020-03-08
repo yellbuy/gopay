@@ -50,6 +50,32 @@ func WachatCompanyChange(mchAppid, mchid, key string, conn *HTTPSClient, charge 
 	return struct2Map(result)
 }
 
+// 微信支付退款
+func WachatCompanyRefund(mchAppid, mchid, key string, conn *HTTPSClient, charge *common.Charge) (map[string]string, error) {
+	var m = make(map[string]string)
+	m["appid"] = mchAppid
+	m["mch_id"] = mchid
+	m["nonce_str"] = util.RandomStr()
+	m["transaction_id"] = charge.TransactionId
+	m["out_refund_no"] = charge.TradeNum
+	m["total_fee"] = WechatMoneyFeeToString(charge.TotalFee)
+	m["refund_fee"] = WechatMoneyFeeToString(charge.MoneyFee)
+	m["refund_desc"] = TruncatedText(charge.Describe, 80)
+	sign, err := WechatGenSign(key, m)
+	if err != nil {
+		return map[string]string{}, err
+	}
+	m["sign"] = sign
+
+	// 转出xml结构
+	result, err := PostWechat("https://api.mch.weixin.qq.com/secapi/pay/refund", m, conn)
+	if err != nil {
+		return map[string]string{}, err
+	}
+
+	return struct2Map(result)
+}
+
 // 微信关闭订单
 func WachatCloseOrder(appid, mchid, key string, outTradeNo string) (common.WeChatQueryResult, error) {
 	var m = make(map[string]string)
@@ -166,18 +192,20 @@ func PostWechat(url string, data map[string]string, h *HTTPSClient) (common.WeCh
 	if err != nil {
 		return xmlRe, errors.New("HTTPSC.PostData: " + err.Error())
 	}
-
+	//fmt.Println("xmlStr:", xmlStr)
 	err = xml.Unmarshal(re, &xmlRe)
 	if err != nil {
 		return xmlRe, errors.New("xml.Unmarshal: " + err.Error())
 	}
 
 	if xmlRe.ReturnCode != "SUCCESS" {
+		fmt.Println(string(re))
 		// 通信失败
 		return xmlRe, errors.New("xmlRe.ReturnMsg: " + xmlRe.ReturnMsg)
 	}
 
 	if xmlRe.ResultCode != "SUCCESS" {
+		//fmt.Println(string(re))
 		// 业务结果失败
 		return xmlRe, errors.New("xmlRe.ErrCodeDes: " + xmlRe.ErrCodeDes)
 	}

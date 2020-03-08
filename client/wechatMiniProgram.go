@@ -89,6 +89,11 @@ func (this *WechatMiniProgramClient) PayToClient(charge *common.Charge) (map[str
 	return WachatCompanyChange(this.AppID, this.MchID, this.Key, this.httpsClient, charge)
 }
 
+// 申请退款
+func (this *WechatMiniProgramClient) PayRefund(charge *common.Charge) (map[string]string, error) {
+	return WachatCompanyRefund(this.AppID, this.MchID, this.Key, this.httpsClient, charge)
+}
+
 // QueryOrder 查询订单
 func (this *WechatMiniProgramClient) QueryOrder(tradeNum string) (common.WeChatQueryResult, error) {
 	return WachatQueryOrder(this.AppID, this.MchID, this.Key, tradeNum)
