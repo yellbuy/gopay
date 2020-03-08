@@ -37,12 +37,38 @@ type WechatResultData struct {
 	CashFee        string `xml:"cash_fee,omitempty" json:"cash_fee,omitempty"`
 	TransactionID  string `xml:"transaction_id,omitempty" json:"transaction_id,omitempty"`
 	OutTradeNO     string `xml:"out_trade_no,omitempty" json:"out_trade_no,omitempty"`
+	OutRefundNO    string `xml:"out_refund_no,omitempty" json:"out_refund_no,omitempty"`
 	Attach         string `xml:"attach,omitempty" json:"attach,omitempty"`
 	TimeEnd        string `xml:"time_end,omitempty" json:"time_end,omitempty"`
 	PartnerTradeNo string `xml:"partner_trade_no,omitempty" json:"partner_trade_no,omitempty"`
 	PaymentNo      string `xml:"payment_no,omitempty" json:"payment_no,omitempty"`
 	PaymentTime    string `xml:"payment_time,omitempty" json:"payment_time,omitempty"`
 	DetailId       string `xml:"detail_id,omitempty" json:"detail_id,omitempty"`
+}
+
+type WechatRefundNotifyRequest struct {
+	ReturnCode string `xml:"return_code,omitempty" json:"return_code,omitempty"`
+	ReturnMsg  string `xml:"return_msg,omitempty" json:"return_msg,omitempty"`
+	Appid      string `xml:"appid,omitempty" json:"appid,omitempty"`
+	MchId      string `xml:"mch_id,omitempty" json:"mch_id,omitempty"`
+	NonceStr   string `xml:"nonce_str,omitempty" json:"nonce_str,omitempty"`
+	ReqInfo    string `xml:"req_info,omitempty" json:"req_info,omitempty"`
+}
+
+type WechatRefundNotify struct {
+	TransactionId       string `xml:"transaction_id,omitempty" json:"transaction_id,omitempty"`
+	OutTradeNo          string `xml:"out_trade_no,omitempty" json:"out_trade_no,omitempty"`
+	RefundId            string `xml:"refund_id,omitempty" json:"refund_id,omitempty"`
+	OutRefundNo         string `xml:"out_refund_no,omitempty" json:"out_refund_no,omitempty"`
+	TotalFee            int    `xml:"total_fee,omitempty" json:"total_fee,omitempty"`
+	SettlementTotalFee  int    `xml:"settlement_total_fee,omitempty" json:"settlement_total_fee,omitempty"`
+	RefundFee           int    `xml:"refund_fee,omitempty" json:"refund_fee,omitempty"`
+	SettlementRefundFee int    `xml:"settlement_refund_fee,omitempty" json:"settlement_refund_fee,omitempty"`
+	RefundStatus        string `xml:"refund_status,omitempty" json:"refund_status,omitempty"`
+	SuccessTime         string `xml:"success_time,omitempty" json:"success_time,omitempty"`
+	RefundRecvAccout    string `xml:"refund_recv_accout,omitempty" json:"refund_recv_accout,omitempty"`
+	RefundAccount       string `xml:"refund_account,omitempty" json:"refund_account,omitempty"`
+	RefundRequestSource string `xml:"refund_request_source,omitempty" json:"refund_request_source,omitempty"`
 }
 
 type WeChatPayResult struct {

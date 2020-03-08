@@ -190,11 +190,50 @@ func WeChatAppCallback(c *client.WechatAppClient, w http.ResponseWriter, r *http
 	if err != nil {
 		return &reXML, err
 	}
-
 	if mySign != m["sign"] {
+		fmt.Println(mySign, "|", m["sign"])
 		panic(errors.New("签名交易错误"))
 	}
 
 	returnCode = "SUCCESS"
+	//fmt.Println("wxpay callback", string(body))
 	return &reXML, nil
+}
+
+func WeChatRefundCallback(c *client.WechatAppClient, w http.ResponseWriter, r *http.Request) (*common.WechatRefundNotify, error) {
+	var returnCode = "FAIL"
+	var returnMsg = ""
+	defer func() {
+		formatStr := `<xml><return_code><![CDATA[%s]]></return_code>
+                  <return_msg>![CDATA[%s]]</return_msg></xml>`
+		returnBody := fmt.Sprintf(formatStr, returnCode, returnMsg)
+		w.Write([]byte(returnBody))
+	}()
+	var reXML common.WechatRefundNotifyRequest
+	//body := cb.Ctx.Input.RequestBody
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		//log.Error(string(body))
+		returnCode = "FAIL"
+		returnMsg = "Bodyerror"
+		panic(err)
+	}
+	err = xml.Unmarshal(body, &reXML)
+	if err != nil {
+		//log.Error(err, string(body))
+		returnMsg = "参数错误"
+		returnCode = "FAIL"
+		panic(err)
+	}
+
+	if reXML.ReturnCode != "SUCCESS" {
+		//log.Error(reXML)
+		returnCode = "FAIL"
+		return nil, errors.New(reXML.ReturnCode)
+	}
+
+	res, err := client.DecryptRefundNotifyReqInfo(reXML.ReqInfo, c.Key)
+
+	//fmt.Println("wxpay callback", string(body))
+	return res, err
 }

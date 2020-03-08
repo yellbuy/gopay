@@ -2,7 +2,11 @@ package client
 
 import (
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/md5"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
@@ -56,11 +60,13 @@ func WachatCompanyRefund(mchAppid, mchid, key string, conn *HTTPSClient, charge 
 	m["appid"] = mchAppid
 	m["mch_id"] = mchid
 	m["nonce_str"] = util.RandomStr()
-	m["transaction_id"] = charge.TransactionId
+	m["notify_url"] = charge.CallbackURL
 	m["out_refund_no"] = charge.TradeNum
-	m["total_fee"] = WechatMoneyFeeToString(charge.TotalFee)
-	m["refund_fee"] = WechatMoneyFeeToString(charge.MoneyFee)
 	m["refund_desc"] = TruncatedText(charge.Describe, 80)
+	m["refund_fee"] = WechatMoneyFeeToString(charge.MoneyFee)
+	m["total_fee"] = WechatMoneyFeeToString(charge.TotalFee)
+	m["transaction_id"] = charge.TransactionId
+
 	sign, err := WechatGenSign(key, m)
 	if err != nil {
 		return map[string]string{}, err
@@ -68,7 +74,7 @@ func WachatCompanyRefund(mchAppid, mchid, key string, conn *HTTPSClient, charge 
 	m["sign"] = sign
 
 	// 转出xml结构
-	result, err := PostWechat("https://api.mch.weixin.qq.com/secapi/pay/refund", m, conn)
+	result, err := PostWechatRefund("https://api.mch.weixin.qq.com/secapi/pay/refund", key, m, conn)
 	if err != nil {
 		return map[string]string{}, err
 	}
@@ -210,6 +216,96 @@ func PostWechat(url string, data map[string]string, h *HTTPSClient) (common.WeCh
 		return xmlRe, errors.New("xmlRe.ErrCodeDes: " + xmlRe.ErrCodeDes)
 	}
 	return xmlRe, nil
+}
+
+//对微信下订单或者查订单
+func PostWechatRefund(url, apiKey string, data map[string]string, h *HTTPSClient) (common.WeChatQueryResult, error) {
+	var xmlRe common.WeChatQueryResult
+	buf := bytes.NewBufferString("")
+
+	for k, v := range data {
+		buf.WriteString(fmt.Sprintf("<%s><![CDATA[%s]]></%s>", k, v, k))
+	}
+	xmlStr := fmt.Sprintf("<xml>%s</xml>", buf.String())
+
+	hc := new(HTTPSClient)
+	if h != nil {
+		hc = h
+	} else {
+		hc = HTTPSC
+	}
+
+	re, err := hc.PostData(url, "text/xml:charset=UTF-8", xmlStr)
+	if err != nil {
+		return xmlRe, errors.New("HTTPSC.PostData: " + err.Error())
+	}
+	//fmt.Println("xmlStr:", xmlStr)
+	err = xml.Unmarshal(re, &xmlRe)
+	if err != nil {
+		return xmlRe, errors.New("xml.Unmarshal: " + err.Error())
+	}
+
+	if xmlRe.ReturnCode != "SUCCESS" {
+		fmt.Println(string(re))
+		// 通信失败
+		return xmlRe, errors.New("xmlRe.ReturnMsg: " + xmlRe.ReturnMsg)
+	}
+
+	if xmlRe.ResultCode != "SUCCESS" {
+		//fmt.Println(string(re))
+		// 业务结果失败
+		return xmlRe, errors.New("xmlRe.ErrCodeDes: " + xmlRe.ErrCodeDes)
+	}
+	return xmlRe, nil
+}
+
+// 解密微信退款异步通知的加密数据
+//    reqInfo：gopay.ParseRefundNotifyResult() 方法获取的加密数据 req_info
+//    apiKey：API秘钥值
+//    返回参数refundNotify：RefundNotify请求的加密数据
+//    返回参数err：错误信息
+//    文档：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_16&index=10
+func DecryptRefundNotifyReqInfo(reqInfo, apiKey string) (refundNotify *common.WechatRefundNotify, err error) {
+	if reqInfo == "" || apiKey == "" {
+		return nil, errors.New("reqInfo or apiKey is null")
+	}
+	var (
+		encryptionB, bs []byte
+		block           cipher.Block
+		blockSize       int
+	)
+	if encryptionB, err = base64.StdEncoding.DecodeString(reqInfo); err != nil {
+		return nil, err
+	}
+	h := md5.New()
+	h.Write([]byte(apiKey))
+	key := strings.ToLower(hex.EncodeToString(h.Sum(nil)))
+	if len(encryptionB)%aes.BlockSize != 0 {
+		return nil, errors.New("encryptedData is error")
+	}
+	if block, err = aes.NewCipher([]byte(key)); err != nil {
+		return nil, err
+	}
+	blockSize = block.BlockSize()
+	func(dst, src []byte) {
+		if len(src)%blockSize != 0 {
+			panic("crypto/cipher: input not full blocks")
+		}
+		if len(dst) < len(src) {
+			panic("crypto/cipher: output smaller than input")
+		}
+		for len(src) > 0 {
+			block.Decrypt(dst, src[:blockSize])
+			src = src[blockSize:]
+			dst = dst[blockSize:]
+		}
+	}(encryptionB, encryptionB)
+	bs = util.PKCS7UnPadding(encryptionB)
+	refundNotify = new(common.WechatRefundNotify)
+	if err = xml.Unmarshal(bs, refundNotify); err != nil {
+		return nil, fmt.Errorf("xml.Unmarshal(%s)：%w", string(bs), err)
+	}
+	return
 }
 
 //对支付宝者查订单
