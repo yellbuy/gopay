@@ -43,7 +43,7 @@ func (this *WechatMiniProgramClient) Pay(charge *common.Charge) (map[string]stri
 	}
 	m["appid"] = appId
 	m["mch_id"] = this.MchID
-	if this.SubMchID != "" {
+	if this.SubMchID != "" && this.MchID != this.SubMchID {
 		m["sub_mch_id"] = this.SubMchID
 	}
 	m["nonce_str"] = util.RandomStr()
