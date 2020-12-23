@@ -27,6 +27,7 @@ func DefaultWechatMiniProgramClient() *WechatMiniProgramClient {
 type WechatMiniProgramClient struct {
 	AppID       string       // 公众账号ID
 	MchID       string       // 商户号ID
+	SubMchID    string       // 商户号ID
 	Key         string       // 密钥
 	PrivateKey  []byte       // 私钥文件内容
 	PublicKey   []byte       // 公钥文件内容
@@ -42,6 +43,9 @@ func (this *WechatMiniProgramClient) Pay(charge *common.Charge) (map[string]stri
 	}
 	m["appid"] = appId
 	m["mch_id"] = this.MchID
+	if this.SubMchID != "" {
+		m["sub_mch_id"] = this.SubMchID
+	}
 	m["nonce_str"] = util.RandomStr()
 	m["body"] = TruncatedText(charge.Describe, 32)
 	m["out_trade_no"] = charge.TradeNum
