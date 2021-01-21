@@ -8,10 +8,10 @@ package main
 
 import (
 	"fmt"
-	"yellbuy.com/gopay"
-	"yellbuy.com/gopay/client"
-	"yellbuy.com/gopay/common"
-	"yellbuy.com/gopay/constant"
+	"github.com/yellbuy/gopay"
+	"github.com/yellbuy/gopay/client"
+	"github.com/yellbuy/gopay/common"
+	"github.com/yellbuy/gopay/constant"
 	"net/http"
 )
 
