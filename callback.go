@@ -1,6 +1,7 @@
 package gopay
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -9,11 +10,10 @@ import (
 	"sort"
 	"strings"
 
-	"encoding/json"
+	"github.com/yellbuy/gopay/client"
+	"github.com/yellbuy/gopay/common"
+	"github.com/yellbuy/gopay/util"
 
-	"yellbuy.com/gopay/client"
-	"yellbuy.com/gopay/common"
-	"yellbuy.com/gopay/util"
 )
 
 func AliWebCallback(w http.ResponseWriter, r *http.Request) (*common.AliWebPayResult, error) {

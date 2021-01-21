@@ -3,9 +3,10 @@ package gopay
 import (
 	"errors"
 
-	"yellbuy.com/gopay/client"
-	"yellbuy.com/gopay/common"
-	"yellbuy.com/gopay/constant"
+	"github.com/yellbuy/gopay/client"
+	"github.com/yellbuy/gopay/common"
+	"github.com/yellbuy/gopay/constant"
+
 )
 
 // 用户下单支付接口

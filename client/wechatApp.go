@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"yellbuy.com/gopay/common"
-	"yellbuy.com/gopay/util"
+	"github.com/yellbuy/gopay/common"
+	"github.com/yellbuy/gopay/util"
 )
 
 var defaultWechatAppClient *WechatAppClient

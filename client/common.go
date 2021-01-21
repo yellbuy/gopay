@@ -15,8 +15,9 @@ import (
 	"strings"
 
 	"github.com/shopspring/decimal"
-	"yellbuy.com/gopay/common"
-	"yellbuy.com/gopay/util"
+	"github.com/yellbuy/gopay/common"
+	"github.com/yellbuy/gopay/util"
+
 )
 
 // 微信企业付款到零钱

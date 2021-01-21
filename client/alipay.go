@@ -16,7 +16,8 @@ import (
 	"strings"
 	"time"
 
-	"yellbuy.com/gopay/common"
+	"github.com/yellbuy/gopay/common"
+
 )
 
 type AliPayClient struct {

@@ -12,7 +12,8 @@ import (
 	"sort"
 	"strings"
 
-	"yellbuy.com/gopay/common"
+	"github.com/yellbuy/gopay/common"
+
 )
 
 var aliWebClient *AliWebClient
